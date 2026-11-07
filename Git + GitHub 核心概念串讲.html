@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<!-- saved from url=(0082)file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Git + GitHub 核心概念串讲 · 从零到一攻略｜可视化教学教材</title>
+<style>
+  :root{
+    --bg:#f6f7f9;
+    --card:#ffffff;
+    --ink:#1b2130;
+    --ink2:#5a6474;
+    --ink3:#8b95a5;
+    --line:#e4e8ef;
+    --git:#f05133;
+    --blue:#2563eb;
+    --green:#16a34a;
+    --purple:#7c3aed;
+    --amber:#d97706;
+    --red:#dc2626;
+    --radius:16px;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:20px}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);line-height:1.78;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ============ 顶部进度条 ============ */
+  #progress{
+    position:fixed;top:0;left:0;height:3px;width:0;
+    background:linear-gradient(90deg,var(--git),var(--amber),var(--blue));
+    z-index:999;transition:width .1s linear;
+  }
+
+  /* ============ 侧边栏 ============ */
+  .sidebar{
+    position:fixed;top:0;left:0;bottom:0;width:268px;
+    background:#0f172a;color:#cbd5e1;overflow-y:auto;padding:24px 0 48px;z-index:100;
+  }
+  .sidebar::-webkit-scrollbar{width:6px}
+  .sidebar::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+  .brand{display:flex;gap:11px;align-items:center;padding:0 22px 20px;border-bottom:1px solid #1e293b;margin-bottom:16px}
+  .brand-logo{
+    height:36px;flex:none;border-radius:9px;background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    padding:5px 9px;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .brand-logo:hover{transform:scale(1.06);box-shadow:0 6px 16px -6px rgba(240,81,51,.5)}
+  .brand-logo img{height:100%;width:auto;max-width:80px;object-fit:contain;display:block}
+  .brand-title{color:#f1f5f9;font-weight:700;font-size:15px;line-height:1.3}
+  .brand-sub{color:#7b8aa3;font-size:11.5px;letter-spacing:.4px}
+  nav a{
+    display:flex;align-items:center;gap:11px;
+    padding:8px 22px;color:#9aa8bd;text-decoration:none;font-size:13.5px;
+    border-left:3px solid transparent;transition:.15s;
+  }
+  nav a:hover{background:#16213a;color:#e2e8f0}
+  nav a.active{background:#16213a;color:#fff;border-left-color:var(--git);font-weight:600}
+  nav .n{font-family:var(--mono);font-size:11px;color:#5f7291;min-width:20px}
+  nav a.active .n{color:var(--git)}
+
+  /* ============ 主体 ============ */
+  main{margin-left:268px;padding-bottom:90px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 30px}
+
+  /* ============ Hero ============ */
+  .hero{
+    background:
+      radial-gradient(900px 320px at 12% -10%, rgba(240,81,51,.20), transparent 62%),
+      radial-gradient(700px 300px at 92% 0%, rgba(37,99,235,.20), transparent 60%),
+      #0f172a;
+    color:#e2e8f0;padding:52px 0 46px;margin-bottom:28px;position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.09) 0 1.2px, transparent 1.4px),
+      radial-gradient(circle at 70% 60%, rgba(255,255,255,.06) 0 1px, transparent 1.2px);
+    background-size:28px 28px, 22px 22px;
+  }
+  .hero-octocat{
+    position:absolute;right:-24px;bottom:-34px;width:240px;height:240px;
+    opacity:.05;pointer-events:none;user-select:none;z-index:0;
+  }
+  .hero-octocat img{width:100%;height:100%;object-fit:contain;filter:invert(1)}
+  .hero-logos{display:flex;align-items:center;gap:14px;margin-bottom:22px;position:relative;z-index:1}
+  .hero-logo{
+    height:56px;border-radius:14px;background:#fff;
+    display:flex;align-items:center;justify-content:center;
+    padding:8px 14px;flex:none;
+    box-shadow:0 8px 22px -8px rgba(0,0,0,.5);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .hero-logo:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 12px 28px -8px rgba(0,0,0,.65)}
+  .hero-logo img{height:100%;width:auto;max-width:160px;object-fit:contain;display:block}
+  .hero-logo.gh{padding:8px;width:56px}
+  .hero h1{
+    font-size:32px;line-height:1.35;margin:0 0 12px;color:#fff;letter-spacing:-.4px;font-weight:800;position:relative;z-index:1;
+  }
+  .hero h1 em{font-style:normal;color:#ff8a6b}
+  .hero p.sub{color:#9fb0c8;margin:0 0 20px;font-size:14.5px;max-width:660px;position:relative;z-index:1}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;position:relative;z-index:1}
+  .tag{
+    font-size:12px;padding:5px 12px;border-radius:999px;
+    background:rgba(255,255,255,.08);color:#c7d3e5;border:1px solid rgba(255,255,255,.12);
+    display:inline-flex;align-items:center;gap:6px;
+    transition:background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .tag:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22);transform:translateY(-1px)}
+  .tag svg{width:13px;height:13px;flex:none}
+
+  /* ============ 章节卡片 ============ */
+  section.ch{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 32px 34px;margin:22px 0;
+    box-shadow:0 1px 2px rgba(16,24,40,.04),0 10px 26px -18px rgba(16,24,40,.16);
+    position:relative;
+  }
+  /* 章节淡入（JS 启用后生效） */
+  body.js-ready section.ch{
+    opacity:0;transform:translateY(18px);
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  body.js-ready section.ch.visible{opacity:1;transform:none}
+
+  .ch-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+  .ch-no{
+    flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    background:linear-gradient(145deg,#fef0ec,#fde3dc);color:var(--git);
+    font-family:var(--mono);font-weight:800;font-size:15px;
+  }
+  .ch-head h2{font-size:21px;margin:0;letter-spacing:-.2px;font-weight:750}
+  .time{
+    font-family:var(--mono);font-size:11.5px;color:var(--ink3);
+    background:#f1f4f9;border:1px solid var(--line);padding:3px 9px;border-radius:999px;
+  }
+  .lead{color:var(--ink2);font-size:14.5px;margin:6px 0 18px}
+  h3{font-size:16px;margin:26px 0 10px;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px}
+  h3::before{content:"";width:4px;height:16px;border-radius:2px;background:var(--git);flex:none}
+  h4{font-size:14.5px;margin:18px 0 8px;font-weight:700;color:#334155}
+  p{margin:10px 0}
+  ul,ol{margin:10px 0;padding-left:22px}
+  li{margin:6px 0}
+  strong{color:#0f172a;font-weight:700}
+
+  /* ============ 代码 ============ */
+  pre{
+    background:#0f172a;color:#dbe4f0;padding:16px 18px;border-radius:11px;
+    overflow-x:auto;font-size:13px;line-height:1.75;margin:14px 0;
+    font-family:var(--mono);border:1px solid #1e293b;position:relative;
+  }
+  pre code{font-family:inherit;background:none;color:inherit;padding:0}
+  :not(pre)>code{
+    background:#eef2f8;color:#b5342a;padding:2px 6px;border-radius:5px;
+    font-size:13px;font-family:var(--mono);border:1px solid #e2e8f0;
+  }
+  .cm{color:#64748b}
+  .cy{color:#7dd3fc}
+  .cs{color:#86efac}
+  .co{color:#fbbf24}
+  /* 代码复制按钮 */
+  .copy-btn{
+    position:absolute;top:8px;right:8px;
+    background:rgba(255,255,255,.08);color:#94a3b8;
+    border:1px solid rgba(255,255,255,.12);border-radius:6px;
+    font-size:11px;padding:3px 9px;cursor:pointer;
+    font-family:var(--mono);opacity:0;
+    transition:opacity .15s, background .15s, color .15s;
+  }
+  pre:hover .copy-btn{opacity:1}
+  .copy-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+  .copy-btn.copied{color:#86efac;border-color:rgba(134,239,172,.5)}
+
+  /* ============ 提示框 ============ */
+  .box{border-radius:12px;padding:14px 18px;margin:16px 0;font-size:14px;border:1px solid;position:relative;padding-left:46px}
+  .box::before{position:absolute;left:16px;top:13px;font-size:16px}
+  .box p:first-child{margin-top:0}.box p:last-child{margin-bottom:0}
+  .box b{display:block;margin-bottom:2px}
+  .tip{background:#eff6ff;border-color:#bfdbfe;color:#1e40af}
+  .tip::before{content:"💡"}
+  .warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+  .warn::before{content:"⚠️"}
+  .danger{background:#fef2f2;border-color:#fecaca;color:#991b1b}
+  .danger::before{content:"⛔"}
+  .ok{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+  .ok::before{content:"✅"}
+  .note{background:#faf5ff;border-color:#e9d5ff;color:#6b21a8}
+  .note::before{content:"📌"}
+
+  /* ============ 表格 ============ */
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:13.5px}
+  th,td{border:1px solid var(--line);padding:10px 13px;text-align:left;vertical-align:top}
+  th{background:#f7f9fc;font-weight:700;color:#334155;font-size:13px}
+  tbody tr:nth-child(even){background:#fcfdff}
+  td code{font-size:12.5px}
+
+  /* ============ 图解通用 ============ */
+  .diagram{
+    width:100%;height:auto;display:block;margin:18px 0;
+    background:#fbfcfe;border:1px solid var(--line);border-radius:12px;padding:14px 10px;
+  }
+  .caption{text-align:center;font-size:12.5px;color:var(--ink3);margin:-8px 0 18px}
+
+  /* ============ 卡片 ============ */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0}
+  .card{
+    border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fbfcfe;position:relative;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .card:hover{transform:translateY(-3px);box-shadow:0 12px 24px -14px rgba(16,24,40,.25);border-color:#d5dce6}
+  .card h5{margin:0 0 6px;font-size:14.5px;font-weight:750;color:#111827;display:flex;align-items:center;gap:8px}
+  .card p{margin:0;font-size:13px;color:var(--ink2)}
+  .card.git{border-top:3px solid var(--git)}
+  .card.blue{border-top:3px solid var(--blue)}
+  .card.green{border-top:3px solid var(--green)}
+  .card.purple{border-top:3px solid var(--purple)}
+  .card.amber{border-top:3px solid var(--amber)}
+  .card-logo{
+    height:24px;flex:none;display:flex;align-items:center;justify-content:center;
+    background:#fff;border-radius:6px;border:1px solid var(--line);padding:2px 5px;
+  }
+  .card-logo img{height:100%;width:auto;max-width:60px;object-fit:contain;display:block}
+
+  /* ============ 章节 Octocat 水印 ============ */
+  .chapter-octocat{
+    position:absolute;right:18px;bottom:18px;width:96px;height:96px;
+    opacity:.045;pointer-events:none;user-select:none;z-index:0;
+  }
+  .chapter-octocat img{width:100%;height:100%;object-fit:contain}
+  section.ch > *:not(.chapter-octocat):not(.ch-head){position:relative;z-index:1}
+
+  /* ============ 四区 ============ */
+  .zones{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin:20px 0;justify-content:center}
+  .zone{
+    flex:1 1 130px;min-width:120px;text-align:center;padding:16px 8px;border-radius:12px;
+    background:#fbfcfe;border:2px solid var(--line);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .zone:hover{transform:translateY(-2px);box-shadow:0 8px 18px -12px rgba(16,24,40,.25)}
+  .zone .zt{font-weight:750;font-size:14px;color:#111827}
+  .zone .ze{font-size:11px;color:var(--ink3);font-family:var(--mono);margin-top:2px}
+  .zone.z1{border-color:#fcd34d;background:#fffbeb}
+  .zone.z2{border-color:#93c5fd;background:#eff6ff}
+  .zone.z3{border-color:#86efac;background:#f0fdf4}
+  .zone.z4{border-color:#c4b5fd;background:#f5f3ff}
+  .zarrow{
+    display:grid;place-items:center;padding:0 6px;min-width:70px;
+    font-family:var(--mono);font-size:11px;color:var(--ink2);text-align:center;line-height:1.4;
+  }
+  .zarrow span{display:block;font-size:15px;color:var(--git);line-height:1}
+
+  /* ============ 提交图 ============ */
+  .commitline{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;margin:18px 0}
+  .cdot{
+    width:52px;height:52px;border-radius:50%;display:grid;place-items:center;
+    background:#fff;border:2.5px solid var(--git);color:var(--git);
+    font-family:var(--mono);font-size:12.5px;font-weight:700;flex:none;
+    transition:transform .18s ease;
+  }
+  .cdot:hover{transform:scale(1.08)}
+  .cline{width:34px;height:2.5px;background:#cbd5e1;flex:none}
+
+  /* ============ 文件夹树 ============ */
+  .tree{
+    font-family:var(--mono);font-size:13px;background:#fbfcfe;border:1px solid var(--line);
+    border-radius:12px;padding:16px 20px;line-height:1.9;margin:16px 0;color:#334155;
+  }
+  .tree .folder{color:var(--blue);font-weight:700}
+  .tree .gitdir{color:var(--git);font-weight:700}
+  .tree .dim{color:var(--ink3)}
+
+  /* ============ 冲突标记 ============ */
+  .conflict{
+    font-family:var(--mono);font-size:12.5px;background:#1e1b4b;color:#e0e7ff;
+    border-radius:11px;padding:16px 18px;margin:16px 0;line-height:1.8;overflow-x:auto;
+  }
+  .conflict .marker{color:#fbbf24;font-weight:700}
+  .conflict .ours{color:#86efac}
+  .conflict .theirs{color:#fca5a5}
+
+  /* ============ 栈图 ============ */
+  .stack{display:flex;flex-direction:column-reverse;gap:8px;max-width:340px;margin:18px auto}
+  .stack .item{
+    background:#f5f3ff;border:1.5px solid #c4b5fd;border-radius:9px;
+    padding:10px 14px;font-family:var(--mono);font-size:12.5px;color:#5b21b6;text-align:center;
+  }
+  .stack .base{
+    background:#f1f5f9;border:1.5px dashed #cbd5e1;border-radius:9px;
+    padding:10px 14px;font-size:12.5px;color:var(--ink3);text-align:center;
+  }
+
+  /* ============ 速查表 ============ */
+  .cheat td:first-child{font-family:var(--mono);color:#b5342a;white-space:nowrap;font-size:12.5px}
+
+  /* ============ 页脚 ============ */
+  footer{
+    text-align:center;color:var(--ink3);font-size:12.5px;
+    padding:34px 20px 10px;border-top:1px solid var(--line);margin-top:36px;
+  }
+
+  /* ============ 回到顶部 ============ */
+  #backTop{
+    position:fixed;right:22px;bottom:22px;z-index:998;
+    width:44px;height:44px;border-radius:50%;
+    background:#0f172a;color:#cbd5e1;border:1px solid #334155;
+    display:grid;place-items:center;cursor:pointer;
+    box-shadow:0 10px 24px -12px rgba(0,0,0,.5);
+    opacity:0;pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease, background .15s ease;
+  }
+  #backTop.show{opacity:1;pointer-events:auto}
+  #backTop:hover{background:#16213a;color:#fff;transform:translateY(-2px)}
+  #backTop svg{width:18px;height:18px}
+
+  @media (max-width:920px){
+    .sidebar{display:none}
+    main{margin-left:0}
+    .hero h1{font-size:24px}
+    section.ch{padding:22px 18px 26px}
+    .wrap{padding:0 16px}
+    .hero-octocat{width:150px;height:150px;opacity:.04}
+    .chapter-octocat{width:64px;height:64px;right:12px;bottom:12px}
+    .hero-logo{height:48px}
+    .hero-logo.gh{width:48px}
+  }
+  @media print{
+    .sidebar,#progress,#backTop,.hero-octocat,.chapter-octocat,.copy-btn{display:none !important}
+    main{margin-left:0}
+    body.js-ready section.ch{opacity:1;transform:none}
+    section.ch{break-inside:avoid;box-shadow:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    body.js-ready section.ch{opacity:1;transform:none;transition:none}
+    *{scroll-behavior:auto !important}
+  }
+</style>
+</head>
+<body class="js-ready">
+
+<div id="progress" style="width: 100%;"></div>
+
+<!-- ================= 侧边栏 ================= -->
+<aside class="sidebar">
+  <div class="brand">
+    <span class="brand-logo">
+      <img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="Git logo" loading="lazy" referrerpolicy="no-referrer">
+    </span>
+    <div>
+      <div class="brand-title">核心概念串讲</div>
+      <div class="brand-sub">从零到一 · 可视化教材</div>
+    </div>
+  </div>
+  <nav id="nav">
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch1" class=""><span class="n">01</span>引言</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch2" class=""><span class="n">02</span>Git 与 GitHub 概念</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch3" class=""><span class="n">03</span>实战准备</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch4" class=""><span class="n">04</span>Init 初始化</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch5" class=""><span class="n">05</span>Commit 提交</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch6" class=""><span class="n">06</span>Branch 分支</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch7" class=""><span class="n">07</span>WorkTree 工作树</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch8" class=""><span class="n">08</span>Conflict 冲突</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch9" class=""><span class="n">09</span>分区模型</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch10" class=""><span class="n">10</span>远端仓库实战</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch11" class=""><span class="n">11</span>GitHub 入门</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch12" class=""><span class="n">12</span>多人协作</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch13" class=""><span class="n">13</span>Cherry Pick</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch14" class=""><span class="n">14</span>Stash</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#ch15" class=""><span class="n">15</span>Rebase</a>
+    <a href="file:///D:/%E8%B0%B7%E6%AD%8C%E4%B8%8B%E8%BD%BD/deepseek_html_20261107_41e055.html#cheat" class="active"><span class="n">★</span>命令速查表</a>
+  </nav>
+</aside>
+
+<!-- ================= 主体 ================= -->
+<main>
+  <header class="hero">
+    <div class="hero-octocat">
+      <img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="" loading="lazy" referrerpolicy="no-referrer">
+    </div>
+    <div class="wrap">
+      <div class="hero-logos">
+        <span class="hero-logo">
+          <img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="Git" loading="lazy" referrerpolicy="no-referrer">
+        </span>
+        <span class="hero-logo gh">
+          <img src="./Git + GitHub 核心概念串讲_files/default.svg" alt="GitHub" loading="lazy" referrerpolicy="no-referrer">
+        </span>
+      </div>
+      <h1>Git + GitHub <em>核心概念串讲</em><br>从零到一攻略</h1>
+      <p class="sub">用动画讲解 + 实战演示的方式，把提交、分支、分区、远端协作、Rebase 等核心概念一次串清。</p>
+      <div class="meta">
+        <span class="tag">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 1.5a2.5 2.5 0 0 0-2.5 2.5v9A2.5 2.5 0 0 0 4 15.5h8a2.5 2.5 0 0 0 2.5-2.5v-9A2.5 2.5 0 0 0 12 1.5H4Zm0 1h8A1.5 1.5 0 0 1 13.5 4v9a1.5 1.5 0 0 1-1.5 1.5H4A1.5 1.5 0 0 1 2.5 13V4A1.5 1.5 0 0 1 4 2.5Z"></path><path d="M4.5 5.5h7v1h-7v-1Zm0 3h7v1h-7v-1Zm0 3h4v1h-4v-1Z"></path></svg>
+          15 个章节
+        </span>
+        <span class="tag">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM2.5 8a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0Z"></path><path d="M8 4.5a.75.75 0 0 1 .75.75v3.19l2.22 2.22a.75.75 0 1 1-1.06 1.06L7.47 9.28A.75.75 0 0 1 7.25 8.75V5.25A.75.75 0 0 1 8 4.5Z"></path></svg>
+          零基础友好
+        </span>
+        <span class="tag">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5a4.5 4.5 0 0 0-4.5 4.5c0 1.07.37 2.05 1 2.82V13a.75.75 0 0 0 .75.75h5.5a.75.75 0 0 0 .75-.75V8.82A4.5 4.5 0 0 0 8 1.5ZM5.5 6a2.5 2.5 0 1 1 5 0c0 .75-.33 1.42-.85 1.87a.75.75 0 0 0-.15.9V12.25h-3V8.77a.75.75 0 0 0-.15-.9A2.48 2.48 0 0 1 5.5 6Z"></path></svg>
+          可视化图解
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+
+    <!-- ========== 01 引言 ========== -->
+    <section class="ch visible" id="ch1">
+      <div class="ch-head">
+        <div class="ch-no">01</div>
+        <h2>引言</h2>
+      </div>
+      <p class="lead">为什么在 AI 时代，Git 反而变成了「必修基本功」？</p>
+
+      <h3>为什么必须学 Git</h3>
+      <ul>
+        <li><strong>代码是资产，版本控制是安全网</strong>——删错一行、改崩一个功能，随时能回到上一秒的完整状态。</li>
+        <li><strong>AI 生成的代码更需要版本管理</strong>——AI 一次可能给你改十几个文件，你必须有办法「一键撤回」。</li>
+        <li><strong>团队协作的公共语言</strong>——全世界几乎所有软件公司都用 Git，不会它就没法参与真实项目。</li>
+        <li><strong>GitHub 是程序员的「简历 + 作品集」</strong>——开源贡献、个人项目都沉淀在这里。</li>
+      </ul>
+
+      <h3>本课的学习路径</h3>
+      <div class="cards">
+        <div class="card git">
+          <h5>第一步：概念</h5>
+          <p>搞清楚 Git 是什么、GitHub 是什么、Commit 是什么，先建立心智模型。</p>
+        </div>
+        <div class="card blue">
+          <h5>第二步：本地实战</h5>
+          <p>Init → Commit → Branch → Merge，把仓库在自己电脑上先玩转。</p>
+        </div>
+        <div class="card green">
+          <h5>第三步：连上远程</h5>
+          <p>Push / Pull / Clone，把代码备份到 GitHub，开始多人协作。</p>
+        </div>
+        <div class="card purple">
+          <h5>第四步：进阶操作</h5>
+          <p>Cherry Pick、Stash、Rebase，处理真实项目里的复杂场景。</p>
+        </div>
+      </div>
+
+      <div class="box tip">
+        <b>学习建议</b>
+        <p>Git 是「动手型」知识，建议边看边在终端里敲。</p>
+      </div>
+    </section>
+
+    <!-- ========== 02 概念 ========== -->
+    <section class="ch visible" id="ch2">
+      <div class="ch-head">
+        <div class="ch-no">02</div>
+        <h2>Git 与 GitHub 概念</h2>
+      </div>
+      <p class="lead">最容易搞混的一对概念：一个是<strong>工具</strong>，一个是<strong>网站</strong>。</p>
+
+      <div class="cards">
+        <div class="card git">
+          <h5>
+            <span class="card-logo"><img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="Git" loading="lazy" referrerpolicy="no-referrer"></span>
+            Git
+          </h5>
+          <p><strong>版本控制系统</strong>，一个装在你自己电脑上的<strong>软件</strong>。<br>
+          负责记录每一次改动、管理分支、合并代码。<br>
+          <em>不联网也能用。</em></p>
+        </div>
+        <div class="card blue">
+          <h5>
+            <span class="card-logo"><img src="./Git + GitHub 核心概念串讲_files/default.svg" alt="GitHub" loading="lazy" referrerpolicy="no-referrer"></span>
+            GitHub
+          </h5>
+          <p>全球最大的<strong>代码托管网站</strong>，一个<strong>平台</strong>。<br>
+          用 Git 把代码推上去备份，别人可以查看、提建议、一起改。<br>
+          <em>必须联网。</em></p>
+        </div>
+      </div>
+
+      <div class="box note">
+        <b>一句话类比</b>
+        <p><strong>Git = 你家里的日记本 + 时光机</strong>（记录你每天写的每一版）；<br>
+        <strong>GitHub = 云端的图书馆 + 协作广场</strong>（把日记本上传，还能让别人一起写）。</p>
+      </div>
+
+      <h3>核心概念：Commit（提交）</h3>
+      <p>整个 Git 世界都围绕 <strong>Commit</strong> 展开。一次 Commit 就是<strong>一次完整的快照</strong>——
+      它把你项目在那一刻的所有文件状态完整保存下来，并附上一个说明、一个时间戳、一个唯一的哈希值。</p>
+
+      <svg class="diagram" viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg">
+        <line x1="50" y1="58" x2="600" y2="58" stroke="#cbd5e1" stroke-width="3"></line>
+        <g font-family="ui-monospace, monospace" font-size="12" text-anchor="middle">
+          <circle cx="90" cy="58" r="19" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="90" y="63" fill="#f05133">C1</text>
+          <text x="90" y="100" fill="#8b95a5" font-size="10.5">初始版本</text>
+
+          <circle cx="230" cy="58" r="19" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="230" y="63" fill="#f05133">C2</text>
+          <text x="230" y="100" fill="#8b95a5" font-size="10.5">新增登录页</text>
+
+          <circle cx="370" cy="58" r="19" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="370" y="63" fill="#f05133">C3</text>
+          <text x="370" y="100" fill="#8b95a5" font-size="10.5">修复一个 bug</text>
+
+          <circle cx="510" cy="58" r="19" fill="#fff" stroke="#f05133" stroke-width="3" stroke-dasharray="5 4"></circle>
+          <text x="510" y="63" fill="#f05133">C4</text>
+          <text x="510" y="100" fill="#8b95a5" font-size="10.5">当前 HEAD</text>
+        </g>
+        <text x="320" y="26" text-anchor="middle" font-size="12" fill="#5a6474" font-family="-apple-system, sans-serif">每次 Commit 都是一次不可变的「快照」，历史只增不改</text>
+      </svg>
+
+      <h3>版本控制解决了什么问题</h3>
+      <table>
+        <thead><tr><th>没有 Git</th><th>有 Git</th></tr></thead>
+        <tbody>
+          <tr><td>项目_v1.zip、项目_v2_最终版.zip、项目_真的最终版.zip…</td><td>一条清晰的提交历史线</td></tr>
+          <tr><td>改崩了只能靠记忆手动还原</td><td><code>git revert</code> 一键撤销某次改动</td></tr>
+          <tr><td>多人改同一份文件只能互相覆盖</td><td>分支 + 合并，各自开发互不干扰</td></tr>
+          <tr><td>不知道这行代码是谁写的、为什么写</td><td><code>git blame</code> 精确到人、精确到提交</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========== 03 实战准备 ========== -->
+    <section class="ch visible" id="ch3">
+      <div class="ch-head">
+        <div class="ch-no">03</div>
+        <h2>实战准备</h2>
+      </div>
+      <p class="lead">三步搞定环境：装 Git → 配身份 → 注册 GitHub。</p>
+
+      <h3>第 1 步：安装 Git</h3>
+      <ul>
+        <li>官网：<code>git-scm.com</code>，下载对应系统安装包，一路「下一步」即可。</li>
+        <li>Windows 用户安装时会自带 <strong>Git Bash</strong>，后续命令都在它里面敲。</li>
+        <li>Mac 用户可直接在终端输入 <code>git</code>，系统会提示安装命令行工具。</li>
+      </ul>
+
+      <h3>第 2 步：验证安装</h3>
+      <pre><code><span class="cy">git</span> <span class="co">--version</span>
+<span class="cm"># 输出类似：git version 2.43.0</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>第 3 步：配置身份（非常重要）</h3>
+      <p>Git 需要知道「每次提交是谁做的」，这个信息会永久写进每一条 Commit 记录里。</p>
+      <pre><code><span class="cm"># 全局配置用户名和邮箱（只需做一次）</span>
+<span class="cy">git</span> config <span class="co">--global</span> user.name <span class="cs">"你的名字"</span>
+<span class="cy">git</span> config <span class="co">--global</span> user.email <span class="cs">"你的邮箱@example.com"</span>
+
+<span class="cm"># 查看当前配置</span>
+<span class="cy">git</span> config <span class="co">--global</span> <span class="co">--list</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box warn">
+        <b>易错点</b>
+        <p>邮箱建议用你注册 GitHub 时用的那个邮箱，这样 GitHub 才能把提交正确归属到你的账号（显示头像和贡献绿格子）。</p>
+      </div>
+
+      <h3>第 4 步：注册 GitHub</h3>
+      <ol>
+        <li>打开 <code>github.com</code>，点击 <strong>Sign up</strong>。</li>
+        <li>填写用户名（会成为你的个人主页地址：<code>github.com/你的用户名</code>）、邮箱、密码。</li>
+        <li>完成邮箱验证。</li>
+        <li>（推荐）上传头像、填写个人简介，让它看起来像个正经作品集。</li>
+      </ol>
+
+      <div class="box tip">
+        <b>可选但推荐</b>
+        <p>配置 SSH 密钥可以免去每次 push 都输密码的麻烦。命令：<code>ssh-keygen -t ed25519 -C "邮箱"</code>，然后把 <code>~/.ssh/id_ed25519.pub</code> 的内容粘贴到 GitHub 的 Settings → SSH and GPG keys。</p>
+      </div>
+    </section>
+
+    <!-- ========== 04 Init ========== -->
+    <section class="ch visible" id="ch4">
+      <div class="ch-head">
+        <div class="ch-no">04</div>
+        <h2>Init 初始化</h2>
+      </div>
+      <p class="lead">把一个普通文件夹，变成「Git 能管理的仓库」。</p>
+
+      <h3>什么是仓库（Repository）</h3>
+      <p>仓库 = 被 Git 纳管的目录。初始化之后，文件夹里会多出一个隐藏的 <code>.git</code> 目录，
+      里面存着<strong>全部版本历史、分支、配置</strong>。可以说：<strong>有 .git 目录的文件夹才叫仓库。</strong></p>
+
+      <pre><code><span class="cm"># 1. 进入你的项目文件夹</span>
+<span class="cy">cd</span> ~/my-project
+
+<span class="cm"># 2. 初始化仓库</span>
+<span class="cy">git</span> init
+
+<span class="cm"># 输出：Initialized empty Git repository in .../my-project/.git/</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>初始化之后长什么样</h3>
+      <div class="tree">
+my-project/<br>
+├── <span class="gitdir">.git/</span> <span class="dim">← Git 的「大脑」，所有历史都在这里</span><br>
+│&nbsp;&nbsp;&nbsp;├── objects/&nbsp;&nbsp;<span class="dim">所有文件快照</span><br>
+│&nbsp;&nbsp;&nbsp;├── refs/&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">分支指针</span><br>
+│&nbsp;&nbsp;&nbsp;└── config&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">仓库配置</span><br>
+├── index.html&nbsp;&nbsp;&nbsp;<span class="dim">← 你的项目文件</span><br>
+└── README.md
+      </div>
+
+      <div class="box danger">
+        <b>绝对不要做的事</b>
+        <p>不要手动删除、修改、移动 <code>.git</code> 目录里的任何文件——那等于直接破坏版本历史，基本无法恢复。<br>
+        删掉整个 <code>.git</code> 文件夹 = 这个项目瞬间「失忆」，所有提交记录全没。</p>
+      </div>
+
+      <h3>查看状态：你最常用的命令</h3>
+      <pre><code><span class="cy">git</span> status
+
+<span class="cm"># On branch main
+# No commits yet
+# Untracked files:
+#   (use "git add &lt;file&gt;..." to include in what will be committed)
+#         index.html</span></code><button type="button" class="copy-btn">复制</button></pre>
+      <p><code>git status</code> 是你随时可以敲的「GPS」——它告诉你：现在在哪个分支、哪些文件改了、哪些已经暂存。</p>
+    </section>
+
+    <!-- ========== 05 Commit ========== -->
+    <section class="ch visible" id="ch5">
+      <div class="ch-head">
+        <div class="ch-no">05</div>
+        <h2>Commit 提交</h2>
+      </div>
+      <p class="lead">Git 最核心的动作：把改动「定格」成一个版本。</p>
+
+      <h3>两步走：add → commit</h3>
+      <pre><code><span class="cm"># 1. 把文件加入暂存区（告诉 Git：这些改动我要提交）</span>
+<span class="cy">git</span> add index.html
+<span class="cy">git</span> add .          <span class="cm"># 添加当前目录所有改动</span>
+
+<span class="cm"># 2. 提交，并写上一句说明</span>
+<span class="cy">git</span> commit <span class="co">-m</span> <span class="cs">"feat: 新增首页导航栏"</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="commitline">
+        <div class="cdot">工作区<br>改动</div>
+        <div class="cline"></div>
+        <div class="cdot" style="border-color:#2563eb;color:#2563eb">add</div>
+        <div class="cline"></div>
+        <div class="cdot" style="border-color:#2563eb;color:#2563eb">暂存区</div>
+        <div class="cline"></div>
+        <div class="cdot" style="border-color:#16a34a;color:#16a34a">commit</div>
+        <div class="cline"></div>
+        <div class="cdot" style="border-color:#16a34a;color:#16a34a">版本<br>C1</div>
+      </div>
+      <p class="caption">一次提交 = 把暂存区的内容打包成一个永久快照</p>
+
+      <h3>Commit Message 规范</h3>
+      <p>写得好，半年后你自己还能看懂。业界通用的 <strong>Conventional Commits</strong> 约定：</p>
+      <table>
+        <thead><tr><th>前缀</th><th>含义</th><th>示例</th></tr></thead>
+        <tbody>
+          <tr><td><code>feat</code></td><td>新功能</td><td><code>feat: 新增用户登录功能</code></td></tr>
+          <tr><td><code>fix</code></td><td>修复 bug</td><td><code>fix: 修复首页按钮点击无响应</code></td></tr>
+          <tr><td><code>docs</code></td><td>文档修改</td><td><code>docs: 更新 README 安装说明</code></td></tr>
+          <tr><td><code>style</code></td><td>格式调整（不影响逻辑）</td><td><code>style: 统一缩进为 2 空格</code></td></tr>
+          <tr><td><code>refactor</code></td><td>重构</td><td><code>refactor: 拆分用户服务类</code></td></tr>
+          <tr><td><code>chore</code></td><td>杂项/构建</td><td><code>chore: 升级依赖版本</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="box warn">
+        <b>常见错误写法</b>
+        <p>❌ <code>"改了一下"</code>　❌ <code>"update"</code>　❌ <code>"123"</code>　❌ <code>"阿巴阿巴"</code><br>
+        好的提交信息 = 别人看这一行就知道这次改了什么、为什么改。</p>
+      </div>
+
+      <h3>查看历史与差异</h3>
+      <pre><code><span class="cy">git</span> log <span class="co">--oneline</span>       <span class="cm"># 一行一条的精简历史</span>
+<span class="cy">git</span> log <span class="co">--oneline --graph</span> <span class="cm"># 带分支图的历史</span>
+<span class="cy">git</span> diff                   <span class="cm"># 工作区 vs 暂存区 的差异</span>
+<span class="cy">git</span> diff <span class="co">--staged</span>          <span class="cm"># 暂存区 vs 上次提交 的差异</span>
+<span class="cy">git</span> show &lt;commit-id&gt;       <span class="cm"># 查看某次提交的详情</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box tip">
+        <b>小技巧</b>
+        <p><code>git commit -am "msg"</code> 可以跳过 <code>add</code> 直接提交<strong>已被 Git 跟踪过</strong>的文件的修改。但新增的文件（Untracked）仍然必须先 <code>add</code>。</p>
+      </div>
+    </section>
+
+    <!-- ========== 06 Branch ========== -->
+    <section class="ch visible" id="ch6">
+      <div class="ch-head">
+        <div class="ch-no">06</div>
+        <h2>Branch 分支</h2>
+      </div>
+      <p class="lead">Git 最强大的能力：让你同时推进多条开发线。</p>
+
+      <h3>分支的本质：它只是一个「指针」</h3>
+      <p>很多人以为创建分支会把代码复制一份——<strong>完全不是</strong>。分支在 Git 里只是一个
+      <strong>指向某次 Commit 的轻量指针</strong>，创建成本几乎为零（几十字节）。</p>
+
+      <svg class="diagram" viewBox="0 0 660 210" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#8b95a5"></path>
+          </marker>
+        </defs>
+
+        <line x1="60" y1="60" x2="600" y2="60" stroke="#cbd5e1" stroke-width="3"></line>
+        <path d="M210,60 C250,60 250,140 380,140" fill="none" stroke="#cbd5e1" stroke-width="3"></path>
+        <line x1="380" y1="140" x2="470" y2="140" stroke="#cbd5e1" stroke-width="3"></line>
+        <path d="M470,140 C560,140 560,60 600,60" fill="none" stroke="#cbd5e1" stroke-width="3"></path>
+
+        <g font-family="ui-monospace, monospace" font-size="12" text-anchor="middle">
+          <circle cx="70" cy="60" r="17" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="70" y="65" fill="#f05133">C1</text>
+
+          <circle cx="210" cy="60" r="17" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="210" y="65" fill="#f05133">C2</text>
+
+          <circle cx="330" cy="60" r="17" fill="#fff" stroke="#f05133" stroke-width="3"></circle>
+          <text x="330" y="65" fill="#f05133">C3</text>
+
+          <circle cx="380" cy="140" r="17" fill="#fff" stroke="#2563eb" stroke-width="3"></circle>
+          <text x="380" y="145" fill="#2563eb">C4</text>
+
+          <circle cx="470" cy="140" r="17" fill="#fff" stroke="#2563eb" stroke-width="3"></circle>
+          <text x="470" y="145" fill="#2563eb">C5</text>
+
+          <circle cx="600" cy="60" r="17" fill="#fff" stroke="#16a34a" stroke-width="3"></circle>
+          <text x="600" y="65" fill="#16a34a">M</text>
+        </g>
+
+        <g font-family="ui-monospace, monospace" font-size="11">
+          <rect x="290" y="14" width="86" height="21" rx="6" fill="#f05133"></rect>
+          <text x="333" y="29" fill="#fff" text-anchor="middle">main</text>
+          <line x1="333" y1="35" x2="333" y2="43" stroke="#f05133" stroke-width="1.5"></line>
+
+          <rect x="452" y="176" width="86" height="21" rx="6" fill="#2563eb"></rect>
+          <text x="495" y="191" fill="#fff" text-anchor="middle">feature</text>
+          <line x1="495" y1="176" x2="495" y2="159" stroke="#2563eb" stroke-width="1.5"></line>
+
+          <text x="600" y="110" fill="#16a34a" text-anchor="middle" font-size="10.5">merge 合并点</text>
+        </g>
+        <text x="330" y="200" text-anchor="middle" font-size="11.5" fill="#8b95a5" font-family="-apple-system, sans-serif">
+          main 与 feature 并行开发，最后通过 Merge 汇合
+        </text>
+      </svg>
+
+      <h3>分支常用命令</h3>
+      <pre><code><span class="cm"># 查看所有分支（* 号表示当前所在分支）</span>
+<span class="cy">git</span> branch
+
+<span class="cm"># 创建分支（只创建，不切换）</span>
+<span class="cy">git</span> branch feature-login
+
+<span class="cm"># 创建并立即切换（最常用）</span>
+<span class="cy">git</span> checkout <span class="co">-b</span> feature-login
+<span class="cy">git</span> switch <span class="co">-c</span> feature-login      <span class="cm"># 新版写法</span>
+
+<span class="cm"># 切换分支</span>
+<span class="cy">git</span> checkout main
+<span class="cy">git</span> switch main
+
+<span class="cm"># 把 feature-login 合并进当前分支</span>
+<span class="cy">git</span> merge feature-login
+
+<span class="cm"># 删除已合并的分支</span>
+<span class="cy">git</span> branch <span class="co">-d</span> feature-login
+<span class="cy">git</span> branch <span class="co">-D</span> feature-login   <span class="cm"># 强制删除未合并的</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>HEAD 是什么</h3>
+      <p><code>HEAD</code> 是 Git 里的「<strong>你正在哪儿</strong>」标记。它通常指向某个分支，而那个分支再指向某个 Commit。</p>
+      <div class="box warn">
+        <b>分离头指针（Detached HEAD）</b>
+        <p>如果你用 <code>git checkout &lt;commit-id&gt;</code> 直接切到某次历史提交，HEAD 就不指向任何分支了。
+        此时你的新提交<strong>不属于任何分支</strong>，一旦切走就会变成「游离提交」，很容易丢失。<br>
+        正确姿势：想在那个位置改代码，先 <code>git switch -c new-branch</code> 建个分支再动手。</p>
+      </div>
+
+      <div class="box ok">
+        <b>分支使用惯例</b>
+        <p><code>main</code>（或 <code>master</code>）永远是<strong>可运行、可上线</strong>的稳定版本；
+        每个新功能 / 每个 bug 修复都从 main 拉一个独立分支；做完再合并回去。这样 main 永远不会被搞坏。</p>
+      </div>
+    </section>
+
+    <!-- ========== 07 WorkTree ========== -->
+    <section class="ch visible" id="ch7">
+      <div class="ch-head">
+        <div class="ch-no">07</div>
+        <h2>WorkTree 工作树</h2>
+      </div>
+      <p class="lead">同一个仓库，同时在多个文件夹里工作。</p>
+
+      <h3>它解决什么痛点</h3>
+      <p>你正在 <code>feature-A</code> 分支写代码写到一半，突然线上出 bug 需要立刻修。
+      传统做法是 <code>git stash</code> 存一下再切分支，切回来还要 stash pop，很折腾。</p>
+      <p><strong>Worktree</strong> 的解法：给另一个分支单独开一个文件夹，两个文件夹共享同一个 Git 历史，
+      你在 A 文件夹写功能、在 B 文件夹修 bug，互不干扰。</p>
+
+      <pre><code><span class="cm"># 在当前仓库旁边新建一个工作树文件夹，检出 hotfix 分支</span>
+<span class="cy">git</span> worktree add ../my-project-hotfix hotfix
+
+<span class="cm"># 查看当前有哪些工作树</span>
+<span class="cy">git</span> worktree list
+
+<span class="cm"># 用完删除工作树（不影响分支本身）</span>
+<span class="cy">git</span> worktree remove ../my-project-hotfix</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="tree">
+~/projects/<br>
+├── <span class="folder">my-project/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">← 主工作树，当前在 feature-A 分支</span><br>
+│&nbsp;&nbsp;&nbsp;├── <span class="gitdir">.git/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">← 真正的 Git 数据（只有这里有一份）</span><br>
+│&nbsp;&nbsp;&nbsp;└── src/...<br>
+│<br>
+└── <span class="folder">my-project-hotfix/</span>&nbsp;<span class="dim">← 第二工作树，当前在 hotfix 分支</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="dim">.git</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="dim">（只是个指向主仓库的指针文件）</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;└── src/...
+      </div>
+
+      <div class="box tip">
+        <b>适用场景</b>
+        <p>① 紧急修复线上 bug；② 同时对比两个分支的代码效果；③ 一个分支跑测试、一个分支继续写代码；④ 构建/打包时不想打断当前开发。</p>
+      </div>
+      <div class="box warn">
+        <b>注意</b>
+        <p>同一个分支<strong>不能</strong>同时被两个工作树检出，会报错。这是有意设计的——防止两处同时改同一分支造成混乱。</p>
+      </div>
+    </section>
+
+    <!-- ========== 08 Conflict ========== -->
+    <section class="ch visible" id="ch8">
+      <div class="ch-head">
+        <div class="ch-no">08</div>
+        <h2>Conflict 冲突</h2>
+      </div>
+      <p class="lead">Git 不是万能的，有些事必须人来决定。</p>
+
+      <h3>冲突是怎么产生的</h3>
+      <p>当两个分支<strong>修改了同一个文件的同一行区域</strong>，Git 无法判断该保留哪一个，于是停下来，把决定权交给你。</p>
+
+      <svg class="diagram" viewBox="0 0 660 175" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="30" width="200" height="115" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"></rect>
+        <text x="140" y="56" text-anchor="middle" font-size="12.5" fill="#1e40af" font-weight="700">main 分支</text>
+        <text x="140" y="82" text-anchor="middle" font-size="11.5" fill="#3b6cb8" font-family="ui-monospace, monospace">let color = "blue";</text>
+        <text x="140" y="104" text-anchor="middle" font-size="11" fill="#7f9dc4">第 12 行被修改</text>
+
+        <rect x="420" y="30" width="200" height="115" rx="12" fill="#f5f3ff" stroke="#c4b5fd" stroke-width="2"></rect>
+        <text x="520" y="56" text-anchor="middle" font-size="12.5" fill="#5b21b6" font-weight="700">feature 分支</text>
+        <text x="520" y="82" text-anchor="middle" font-size="11.5" fill="#7c4dc4" font-family="ui-monospace, monospace">let color = "red";</text>
+        <text x="520" y="104" text-anchor="middle" font-size="11" fill="#a68ccc">同一行被修改</text>
+
+        <text x="330" y="78" text-anchor="middle" font-size="26" fill="#dc2626" font-weight="800">✕</text>
+        <text x="330" y="103" text-anchor="middle" font-size="11" fill="#dc2626">Git 无法自动决定</text>
+
+        <text x="330" y="165" text-anchor="middle" font-size="12" fill="#8b95a5" font-family="-apple-system, sans-serif">
+          merge 时两个分支改动同一行 → 触发 CONFLICT，需要人工裁决
+        </text>
+      </svg>
+
+      <h3>冲突长什么样</h3>
+      <p>打开冲突文件，会看到 Git 插入的特殊标记：</p>
+      <div class="conflict">
+<span class="marker">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span> HEAD<br>
+<span class="ours">let color = "blue";</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 当前分支（ours）的内容</span><br>
+<span class="marker">=======</span><br>
+<span class="theirs">let color = "red";</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">// 要合并进来的分支（theirs）</span><br>
+<span class="marker">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> feature
+      </div>
+
+      <h3>解决冲突四步法</h3>
+      <ol>
+        <li><strong>看</strong>：<code>git status</code> 会列出所有 <em>both modified</em> 的文件。</li>
+        <li><strong>改</strong>：打开文件，手动决定最终保留哪段代码（可以两个都留，也可以都不留），
+            然后<strong>删除 <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>、<code>=======</code>、<code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> 这三行标记</strong>。</li>
+        <li><strong>标记已解决</strong>：<code>git add &lt;文件名&gt;</code>。</li>
+        <li><strong>完成合并</strong>：<code>git commit</code>（Git 会自动生成一条 merge commit 信息）。</li>
+      </ol>
+
+      <pre><code><span class="cy">git</span> status                  <span class="cm"># 找出冲突文件</span>
+<span class="cm"># ...手动编辑文件，删掉冲突标记...</span>
+<span class="cy">git</span> add conflicted-file.js
+<span class="cy">git</span> commit
+
+<span class="cm"># 如果搞砸了，想放弃这次合并回到合并前</span>
+<span class="cy">git</span> merge <span class="co">--abort</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box tip">
+        <b>减少冲突的习惯</b>
+        <p>① 分支生命周期尽量短，别让一个分支活一个月；② 频繁从 main 拉取最新代码合并进来；③ 团队约定同一个文件的负责人；④ 编辑器插件（VS Code 有内置的三栏冲突解决界面）能大幅提速。</p>
+      </div>
+    </section>
+
+    <!-- ========== 09 分区 ========== -->
+    <section class="ch visible" id="ch9">
+      <div class="ch-head">
+        <div class="ch-no">09</div>
+        <h2>分区模型（四区）</h2>
+      </div>
+      <p class="lead">整门课最核心的心智模型：搞懂这四个区，Git 就懂了一半。</p>
+
+      <h3>四区全景图</h3>
+      <div class="zones">
+        <div class="zone z1">
+          <div class="zt">工作区</div>
+          <div class="ze">Working Dir</div>
+        </div>
+        <div class="zarrow"><span>→</span>git add</div>
+        <div class="zone z2">
+          <div class="zt">暂存区</div>
+          <div class="ze">Index / Stage</div>
+        </div>
+        <div class="zarrow"><span>→</span>git commit</div>
+        <div class="zone z3">
+          <div class="zt">本地仓库</div>
+          <div class="ze">Local Repo</div>
+        </div>
+        <div class="zarrow"><span>→</span>git push</div>
+        <div class="zone z4">
+          <div class="zt">远程仓库</div>
+          <div class="ze">Remote</div>
+        </div>
+      </div>
+      <p class="caption">← 反向流动：git restore / git reset / git pull</p>
+
+      <table>
+        <thead><tr><th>区域</th><th>位置</th><th>含义</th><th>进入命令</th><th>回退命令</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>工作区</strong></td>
+            <td>你电脑上的文件夹</td>
+            <td>你正在编辑的代码，肉眼可见</td>
+            <td>编辑文件</td>
+            <td><code>git restore &lt;file&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>暂存区</strong></td>
+            <td><code>.git/index</code></td>
+            <td>提交前的「购物车」，可以挑选要提交的内容</td>
+            <td><code>git add</code></td>
+            <td><code>git restore --staged &lt;file&gt;</code></td>
+          </tr>
+          <tr>
+            <td><strong>本地仓库</strong></td>
+            <td><code>.git/objects</code></td>
+            <td>所有已提交的历史版本，永久保存</td>
+            <td><code>git commit</code></td>
+            <td><code>git reset</code> / <code>git revert</code></td>
+          </tr>
+          <tr>
+            <td><strong>远程仓库</strong></td>
+            <td>GitHub 服务器</td>
+            <td>团队共享的中央仓库</td>
+            <td><code>git push</code></td>
+            <td><code>git pull</code>（拉回来）</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="box note">
+        <b>为什么需要「暂存区」这个中间层？</b>
+        <p>因为它让你可以<strong>挑着提交</strong>。你改了 5 个文件，但只想提交其中 2 个相关的改动——
+        先 <code>add</code> 那 2 个，然后 <code>commit</code>，剩下的留在工作区继续改。
+        如果没有暂存区，你只能「全提交」或「全不提交」。</p>
+      </div>
+
+      <h3>三种「后悔药」</h3>
+      <p>不同场景要用不同的药，用错会出大问题：</p>
+
+      <div class="cards">
+        <div class="card amber">
+          <h5>① Discard 放弃修改</h5>
+          <p><strong>场景</strong>：改动还没 commit，想直接扔掉。</p>
+          <p><code>git restore &lt;file&gt;</code></p>
+          <p style="margin-top:8px;color:#9a3412">⚠️ 丢弃后无法找回</p>
+        </div>
+        <div class="card purple">
+          <h5>② Reset 回退</h5>
+          <p><strong>场景</strong>：想把自己本地分支的历史「抹掉」几次提交。</p>
+          <p><code>git reset --hard HEAD~1</code></p>
+          <p style="margin-top:8px;color:#9a3412">⚠️ 会改写历史，<strong>多人分支禁用</strong></p>
+        </div>
+        <div class="card green">
+          <h5>③ Revert 反向提交</h5>
+          <p><strong>场景</strong>：撤销某次已推送的提交，但保留历史。</p>
+          <p><code>git revert &lt;commit-id&gt;</code></p>
+          <p style="margin-top:8px;color:#166534">✅ 多人协作首选</p>
+        </div>
+      </div>
+
+      <pre><code><span class="cm"># ---- Reset 的三种模式 ----</span>
+<span class="cy">git</span> reset <span class="co">--soft</span> HEAD~1   <span class="cm"># 撤销 commit，改动保留在暂存区</span>
+<span class="cy">git</span> reset <span class="co">--mixed</span> HEAD~1  <span class="cm"># 撤销 commit 和 add，改动保留在工作区（默认）</span>
+<span class="cy">git</span> reset <span class="co">--hard</span> HEAD~1   <span class="cm"># 彻底撤销 commit + add + 工作区改动（危险）</span>
+
+<span class="cm"># ---- Revert：生成一条「反向提交」来抵消目标提交 ----</span>
+<span class="cy">git</span> revert &lt;commit-id&gt;
+<span class="cy">git</span> revert <span class="co">--no-commit</span> &lt;commit-id&gt;  <span class="cm"># 先不自动提交，手动调整</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box danger">
+        <b>黄金铁律</b>
+        <p><strong>多人协作的公共分支（main / develop）上，绝对禁止使用 <code>git reset</code>。</strong><br>
+        因为你改写的是「历史」，而别人电脑上的历史还是旧的。你一 push（还得 <code>-f</code> 强推），
+        所有人的提交记录就和服务器对不上了，会导致别人的工作丢失、后续无法正常合并。<br>
+        线上出问题要撤销，永远用 <code>git revert</code>。</p>
+      </div>
+
+      <h3>命令与区域的对应关系（背下来）</h3>
+      <table>
+        <thead><tr><th>命令</th><th>方向</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td><code>git add</code></td><td>工作区 → 暂存区</td><td>挑选要提交的改动</td></tr>
+          <tr><td><code>git restore --staged</code></td><td>暂存区 → 工作区</td><td>把改动移出暂存区</td></tr>
+          <tr><td><code>git commit</code></td><td>暂存区 → 本地仓库</td><td>生成一个版本快照</td></tr>
+          <tr><td><code>git reset</code></td><td>本地仓库 → 暂存区/工作区</td><td>回退提交（改写历史）</td></tr>
+          <tr><td><code>git push</code></td><td>本地仓库 → 远程仓库</td><td>上传提交</td></tr>
+          <tr><td><code>git pull</code></td><td>远程仓库 → 本地仓库+工作区</td><td>下载并合并（= fetch + merge）</td></tr>
+          <tr><td><code>git fetch</code></td><td>远程仓库 → 本地仓库</td><td>只下载，不合并</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========== 10 远端仓库实战 ========== -->
+    <section class="ch visible" id="ch10">
+      <div class="ch-head">
+        <div class="ch-no">10</div>
+        <h2>远端仓库实战</h2>
+      </div>
+      <p class="lead">把本地代码推上云端，从此不再怕硬盘坏。</p>
+
+      <h3>两种起点：从零开始 or 克隆别人的</h3>
+      <h4>场景 A：本地已有项目，要推到 GitHub</h4>
+      <pre><code><span class="cm"># 1. 在 GitHub 网页上点 New repository，创建一个空仓库（不要勾选 README）</span>
+<span class="cm"># 2. 在本地项目里关联远程地址，并给它起名叫 origin</span>
+<span class="cy">git</span> remote add origin https://github.com/你的用户名/仓库名.git
+
+<span class="cm"># 3. 确认分支名叫 main（GitHub 默认）</span>
+<span class="cy">git</span> branch <span class="co">-M</span> main
+
+<span class="cm"># 4. 首次推送，-u 表示把本地 main 和远程 origin/main 绑定</span>
+<span class="cy">git</span> push <span class="co">-u</span> origin main</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h4>场景 B：远程已有项目，要拉到本地</h4>
+      <pre><code><span class="cy">git</span> clone https://github.com/用户名/仓库名.git
+
+<span class="cm"># 克隆会自动完成三件事：
+# 1. 下载全部代码和历史
+# 2. 创建 origin 远程别名
+# 3. 检出默认分支到工作区</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>origin 是什么</h3>
+      <p><code>origin</code> 只是<strong>远程仓库地址的别名</strong>，不是关键字。你也可以叫 <code>upstream</code>、<code>github</code>，
+      但业界约定俗成都用 <code>origin</code> 表示「我 fork/克隆来源的那个仓库」。</p>
+
+      <pre><code><span class="cy">git</span> remote <span class="co">-v</span>            <span class="cm"># 查看已配置的远程地址</span>
+<span class="cy">git</span> remote set-url origin &lt;新地址&gt;   <span class="cm"># 修改远程地址</span>
+<span class="cy">git</span> remote remove origin            <span class="cm"># 删除远程关联</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <svg class="diagram" viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg">
+        <rect x="40" y="55" width="230" height="110" rx="14" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"></rect>
+        <text x="155" y="85" text-anchor="middle" font-size="13.5" fill="#1e40af" font-weight="700">本地仓库</text>
+        <text x="155" y="108" text-anchor="middle" font-size="11.5" fill="#3b6cb8" font-family="ui-monospace, monospace">你的电脑 · main</text>
+        <text x="155" y="132" text-anchor="middle" font-size="11" fill="#7f9dc4">工作区 + 暂存区 + .git</text>
+
+        <rect x="390" y="55" width="230" height="110" rx="14" fill="#f0fdf4" stroke="#86efac" stroke-width="2"></rect>
+        <text x="505" y="85" text-anchor="middle" font-size="13.5" fill="#166534" font-weight="700">远程仓库</text>
+        <text x="505" y="108" text-anchor="middle" font-size="11.5" fill="#15803d" font-family="ui-monospace, monospace">GitHub · origin/main</text>
+        <text x="505" y="132" text-anchor="middle" font-size="11" fill="#4d9c6c">团队共享的中央副本</text>
+
+        <defs>
+          <marker id="ar2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#f05133"></path>
+          </marker>
+          <marker id="ar3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#2563eb"></path>
+          </marker>
+        </defs>
+        <line x1="272" y1="90" x2="386" y2="90" stroke="#f05133" stroke-width="2.5" marker-end="url(#ar2)"></line>
+        <text x="330" y="80" text-anchor="middle" font-size="11.5" fill="#f05133" font-family="ui-monospace, monospace">git push</text>
+
+        <line x1="386" y1="130" x2="272" y2="130" stroke="#2563eb" stroke-width="2.5" marker-end="url(#ar3)"></line>
+        <text x="330" y="152" text-anchor="middle" font-size="11.5" fill="#2563eb" font-family="ui-monospace, monospace">git pull / fetch</text>
+      </svg>
+
+      <div class="box warn">
+        <b>push 被拒绝怎么办</b>
+        <p>报错 <code>! [rejected] ... fetch first</code>，说明远程有你本地没有的提交。
+        <strong>正确做法</strong>：先 <code>git pull</code> 把远程变化合并进来，解决可能的冲突，再 <code>git push</code>。<br>
+        <strong>错误做法</strong>：直接 <code>git push -f</code> 强推——这会覆盖掉别人的提交。</p>
+      </div>
+
+      <div class="box tip">
+        <b>实用命令</b>
+        <p><code>git push origin --delete 分支名</code> 删除远程分支；<br>
+        <code>git remote show origin</code> 查看远程仓库的详细信息。</p>
+      </div>
+    </section>
+
+    <!-- ========== 11 GitHub 入门 ========== -->
+    <section class="ch visible" id="ch11">
+      <div class="chapter-octocat">
+        <img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="" loading="lazy" referrerpolicy="no-referrer">
+      </div>
+      <div class="ch-head">
+        <div class="ch-no">11</div>
+        <h2>GitHub 入门</h2>
+      </div>
+      <p class="lead">不只是一个网盘，而是一个完整的协作生态。</p>
+
+      <h3>创建仓库时的几个关键选项</h3>
+      <table>
+        <thead><tr><th>选项</th><th>作用</th><th>建议</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Repository name</strong></td><td>仓库名，会出现在 URL 里</td><td>用英文小写 + 连字符，如 <code>my-portfolio</code></td></tr>
+          <tr><td><strong>Public / Private</strong></td><td>公开可见 / 仅自己（及协作者）可见</td><td>作品集用 Public，公司项目用 Private</td></tr>
+          <tr><td><strong>Add a README file</strong></td><td>自动生成项目说明文件</td><td>✅ 强烈建议勾选</td></tr>
+          <tr><td><strong>Add .gitignore</strong></td><td>选择要忽略的文件模板</td><td>✅ 按语言选（Node / Python 等）</td></tr>
+          <tr><td><strong>Choose a license</strong></td><td>开源协议</td><td>开源项目建议 MIT</td></tr>
+        </tbody>
+      </table>
+
+      <h3>README.md 是项目的门面</h3>
+      <p>别人点进你的仓库，第一眼看到的就是 README。一个好的 README 应该包含：</p>
+      <ul>
+        <li><strong>项目简介</strong>——一句话说清这是干什么的</li>
+        <li><strong>截图 / 效果图</strong>——视觉冲击力最强</li>
+        <li><strong>安装与运行方式</strong>——让别人能跑起来</li>
+        <li><strong>技术栈</strong>——用了什么框架、什么工具</li>
+        <li><strong>License</strong>——授权说明</li>
+      </ul>
+      <p>README 使用 <strong>Markdown</strong> 语法编写，GitHub 会自动渲染成漂亮的网页。</p>
+
+      <h3>.gitignore：不要提交不该提交的东西</h3>
+      <p>有些文件<strong>永远不该进版本库</strong>：依赖包、编译产物、密钥文件、本地配置。</p>
+      <pre><code><span class="cm"># .gitignore 示例（Node 项目）</span>
+node_modules/
+dist/
+.env
+.DS_Store
+*.log</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box danger">
+        <b>安全红线</b>
+        <p>绝对不要把 <code>.env</code>、API Key、数据库密码、私钥文件提交到仓库——一旦推上 GitHub，
+        <strong>哪怕之后删掉，历史记录里依然永久存在</strong>，爬虫几秒钟就能扫到。正确做法是用 <code>.gitignore</code> 提前排除，
+        或者用 GitHub Secrets 管理。</p>
+      </div>
+
+      <h3>必须认识的 GitHub 功能</h3>
+      <div class="cards">
+        <div class="card blue">
+          <h5>Star ⭐</h5>
+          <p>收藏 / 点赞。Star 数是开源项目影响力的直接体现。</p>
+        </div>
+        <div class="card green">
+          <h5>Fork 🍴</h5>
+          <p>把别人的仓库完整复制一份到你自己的账号下，你可以随意改，改完可以发起 PR 回馈原项目。</p>
+        </div>
+        <div class="card purple">
+          <h5>Pull Request</h5>
+          <p>「我改好了，请合并」的正式请求。可以在线逐行 review、讨论、批准。GitHub 协作的核心机制。</p>
+        </div>
+        <div class="card amber">
+          <h5>Issues</h5>
+          <p>问题追踪 / 任务清单。报 bug、提需求、讨论方案都在这里，可打标签、指派负责人。</p>
+        </div>
+      </div>
+
+      <h3>其他实用入口</h3>
+      <ul>
+        <li><strong>Actions</strong>：CI/CD 自动化，代码一推就自动跑测试、自动部署。</li>
+        <li><strong>Pages</strong>：免费把仓库变成一个静态网站（个人主页、项目文档）。</li>
+        <li><strong>Releases</strong>：发布带版本号的软件包。</li>
+        <li><strong>Settings → Collaborators</strong>：邀请别人直接往你的仓库推代码。</li>
+        <li><strong>Settings → Branches</strong>：设置分支保护规则，防止有人直接往 main 推。</li>
+      </ul>
+    </section>
+
+    <!-- ========== 12 多人协作 ========== -->
+    <section class="ch visible" id="ch12">
+      <div class="chapter-octocat">
+        <img src="./Git + GitHub 核心概念串讲_files/7a899e510fb30f2442a781f7bec3c643ad4bd013a5b3" alt="" loading="lazy" referrerpolicy="no-referrer">
+      </div>
+      <div class="ch-head">
+        <div class="ch-no">12</div>
+        <h2>多人协作</h2>
+      </div>
+      <p class="lead">从「一个人写」升级到「一群人写同一份代码」。</p>
+
+      <h3>两种协作模型</h3>
+      <h4>模型一：直接推送（小团队 / 内部项目）</h4>
+      <p>所有人在同一个仓库上工作，各自拉分支，做完合并回 main 再 push。
+      需要仓库管理员在 Settings → Collaborators 里把队友加进来。</p>
+
+      <h4>模型二：Fork + Pull Request（开源项目 / 外部贡献）</h4>
+      <p>你没有原仓库的写权限，所以先 <strong>Fork</strong> 一份到自己账号下，在自己那份上改，
+      改完向原仓库发起 <strong>Pull Request</strong>，由维护者审核决定是否合并。</p>
+
+      <svg class="diagram" viewBox="0 0 680 230" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="ar4" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L9,3 z" fill="#94a3b8"></path>
+          </marker>
+        </defs>
+
+        <rect x="30" y="40" width="175" height="72" rx="12" fill="#f0fdf4" stroke="#86efac" stroke-width="2"></rect>
+        <text x="117" y="68" text-anchor="middle" font-size="12.5" fill="#166534" font-weight="700">原仓库 upstream</text>
+        <text x="117" y="90" text-anchor="middle" font-size="11" fill="#4d9c6c" font-family="ui-monospace, monospace">github.com/作者/项目</text>
+
+        <rect x="255" y="40" width="175" height="72" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="2"></rect>
+        <text x="342" y="68" text-anchor="middle" font-size="12.5" fill="#1e40af" font-weight="700">我的 Fork</text>
+        <text x="342" y="90" text-anchor="middle" font-size="11" fill="#3b6cb8" font-family="ui-monospace, monospace">github.com/我/项目</text>
+
+        <rect x="480" y="40" width="175" height="72" rx="12" fill="#fff7ed" stroke="#fed7aa" stroke-width="2"></rect>
+        <text x="567" y="68" text-anchor="middle" font-size="12.5" fill="#9a3412" font-weight="700">本地仓库</text>
+        <text x="567" y="90" text-anchor="middle" font-size="11" fill="#c2703a" font-family="ui-monospace, monospace">我的电脑</text>
+
+        <line x1="205" y1="76" x2="251" y2="76" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar4)"></line>
+        <text x="228" y="66" text-anchor="middle" font-size="10.5" fill="#64748b" font-family="ui-monospace, monospace">Fork</text>
+
+        <line x1="430" y1="76" x2="476" y2="76" stroke="#94a3b8" stroke-width="2" marker-end="url(#ar4)"></line>
+        <text x="453" y="66" text-anchor="middle" font-size="10.5" fill="#64748b" font-family="ui-monospace, monospace">Clone</text>
+
+        <path d="M567,116 L567,180 L117,180 L117,116" fill="none" stroke="#f05133" stroke-width="2.2" marker-end="url(#ar4)"></path>
+        <text x="342" y="200" text-anchor="middle" font-size="11.5" fill="#f05133" font-family="ui-monospace, monospace">
+          ① push 到我的 Fork　② 发起 Pull Request 回原仓库
+        </text>
+
+        <text x="342" y="26" text-anchor="middle" font-size="11.5" fill="#8b95a5" font-family="-apple-system, sans-serif">
+          开源贡献的标准路径
+        </text>
+      </svg>
+
+      <h3>标准协作流程（每天都会用）</h3>
+      <pre><code><span class="cm"># 1. 开始工作前，先拉取最新代码（非常重要！）</span>
+<span class="cy">git</span> switch main
+<span class="cy">git</span> pull
+
+<span class="cm"># 2. 从最新 main 拉一个功能分支</span>
+<span class="cy">git</span> switch <span class="co">-c</span> feature/user-profile
+
+<span class="cm"># 3. 写代码，多次提交</span>
+<span class="cy">git</span> add .
+<span class="cy">git</span> commit <span class="co">-m</span> <span class="cs">"feat: 新增用户资料页"</span>
+
+<span class="cm"># 4. 推送分支到远程</span>
+<span class="cy">git</span> push <span class="co">-u</span> origin feature/user-profile
+
+<span class="cm"># 5. 在 GitHub 上发起 Pull Request，等待 review
+
+# 6. 合并后，清理本地分支</span>
+<span class="cy">git</span> switch main
+<span class="cy">git</span> pull
+<span class="cy">git</span> branch <span class="co">-d</span> feature/user-profile</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>协作中出现冲突怎么处理</h3>
+      <ol>
+        <li><code>git pull</code> 之后提示冲突</li>
+        <li>打开冲突文件，手动编辑解决（参考第 8 章）</li>
+        <li><code>git add</code> 标记已解决</li>
+        <li><code>git commit</code> 完成合并</li>
+        <li><code>git push</code></li>
+      </ol>
+
+      <div class="box tip">
+        <b>高频救命操作</b>
+        <p>如果 <code>git pull</code> 产生了一个丑陋的 merge commit，可以用
+        <code>git pull --rebase</code> 让本地提交「接」在远程最新提交之后，历史会是一条干净的直线。
+        （原理见第 15 章 Rebase）</p>
+      </div>
+
+      <div class="box ok">
+        <b>团队协作的黄金习惯</b>
+        <p>
+        ① <strong>每天开工第一件事是 pull</strong>；<br>
+        ② <strong>一次提交只做一件事</strong>，别把三个功能混在一次 commit 里；<br>
+        ③ <strong>分支命名有意义</strong>：<code>feature/xxx</code>、<code>fix/xxx</code>、<code>hotfix/xxx</code>；<br>
+        ④ <strong>合并前先自查 diff</strong>，别把调试代码、注释掉的代码推上去；<br>
+        ⑤ <strong>main 分支加保护</strong>，禁止直接 push，必须走 PR + review。
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 13 Cherry Pick ========== -->
+    <section class="ch visible" id="ch13">
+      <div class="ch-head">
+        <div class="ch-no">13</div>
+        <h2>Cherry Pick</h2>
+      </div>
+      <p class="lead">「摘樱桃」——只挑我想要的那几个提交。</p>
+
+      <h3>它解决什么问题</h3>
+      <p>你有一个开发分支 <code>dev</code>，上面有 5 个提交。现在只想把其中<strong>那个修复 bug 的提交</strong>单独拿到 <code>main</code> 上，
+      其他提交暂时不要。这时候 <code>merge</code> 会把全部内容合进来，不行；<code>cherry-pick</code> 正好对症。</p>
+
+      <svg class="diagram" viewBox="0 0 680 200" xmlns="http://www.w3.org/2000/svg">
+        <line x1="60" y1="50" x2="620" y2="50" stroke="#cbd5e1" stroke-width="3"></line>
+        <line x1="60" y1="145" x2="620" y2="145" stroke="#cbd5e1" stroke-width="3"></line>
+
+        <g font-family="ui-monospace, monospace" font-size="11.5" text-anchor="middle">
+          <circle cx="90" cy="50" r="16" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="90" y="55" fill="#f05133">C1</text>
+
+          <circle cx="210" cy="50" r="16" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="210" y="55" fill="#f05133">C2</text>
+
+          <circle cx="600" cy="50" r="16" fill="#fff" stroke="#16a34a" stroke-width="2.5"></circle>
+          <text x="600" y="55" fill="#16a34a">C5'</text>
+
+          <circle cx="90" cy="145" r="16" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="90" y="150" fill="#f05133">C1</text>
+
+          <circle cx="210" cy="145" r="16" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="210" y="150" fill="#f05133">C2</text>
+
+          <circle cx="330" cy="145" r="16" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="330" y="150" fill="#2563eb">C3</text>
+
+          <circle cx="440" cy="145" r="16" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="440" y="150" fill="#2563eb">C4</text>
+
+          <circle cx="550" cy="145" r="16" fill="#fff" stroke="#7c3aed" stroke-width="3"></circle>
+          <text x="550" y="150" fill="#7c3aed">C5</text>
+        </g>
+
+        <path d="M550,127 C550,95 600,90 600,68" fill="none" stroke="#7c3aed" stroke-width="2.2" stroke-dasharray="5 4"></path>
+        <circle cx="550" cy="145" r="24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-dasharray="4 3"></circle>
+
+        <g font-size="11" font-family="-apple-system, sans-serif">
+          <text x="160" y="30" fill="#8b95a5">main 分支</text>
+          <text x="160" y="178" fill="#8b95a5">dev 分支（只想要 C5 这次修复）</text>
+          <text x="630" y="120" fill="#7c3aed" font-size="10.5">cherry-pick C5</text>
+        </g>
+      </svg>
+
+      <h3>命令用法</h3>
+      <pre><code><span class="cm"># 1. 切换到目标分支</span>
+<span class="cy">git</span> switch main
+
+<span class="cm"># 2. 先找到你想摘的那个提交的 hash</span>
+<span class="cy">git</span> log <span class="co">--oneline</span> dev
+<span class="cm"># a1b2c3d fix: 修复登录超时问题   ← 就是它</span>
+
+<span class="cm"># 3. 摘过来</span>
+<span class="cy">git</span> cherry-pick a1b2c3d
+
+<span class="cm"># 一次摘多个（按顺序）</span>
+<span class="cy">git</span> cherry-pick a1b2c3d e4f5g6h
+
+<span class="cm"># 摘一段连续区间（左开右闭）</span>
+<span class="cy">git</span> cherry-pick a1b2c3d..e4f5g6h
+
+<span class="cm"># 只摘改动到工作区，不自动提交</span>
+<span class="cy">git</span> cherry-pick <span class="co">-n</span> a1b2c3d</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <div class="box warn">
+        <b>注意事项</b>
+        <p>
+        ① Cherry-pick 会生成一个<strong>新的 commit</strong>（hash 不同），所以原提交和新提交是两条独立记录；<br>
+        ② 如果摘过来的提交依赖前面几次提交的代码，可能<strong>产生冲突</strong>，需要手动解决；<br>
+        ③ 大量使用 cherry-pick 说明分支策略可能有问题，长期来看应该优化分支模型；<br>
+        ④ 中途出错想放弃：<code>git cherry-pick --abort</code>。
+        </p>
+      </div>
+
+      <div class="box tip">
+        <b>典型使用场景</b>
+        <p>① 把 hotfix 分支的紧急修复同步到多个版本分支；② 不小心在错误的分支上提交了，摘到正确分支去；
+        ③ 从别人的分支里「借」一个现成的功能实现。</p>
+      </div>
+    </section>
+
+    <!-- ========== 14 Stash ========== -->
+    <section class="ch visible" id="ch14">
+      <div class="ch-head">
+        <div class="ch-no">14</div>
+        <h2>Stash</h2>
+      </div>
+      <p class="lead">写到一半要切分支？先「存进抽屉」。</p>
+
+      <h3>它解决什么问题</h3>
+      <p>你正在 main 上改代码，改到一半还没法提交（代码是残缺的），但突然需要切到别的分支处理事情。
+      带着半成品切分支，很可能污染另一个分支。</p>
+      <p><strong>Stash</strong> 就是把这些未提交的改动临时「打包收起来」，让工作区恢复干净，等回来再取出来。</p>
+
+      <div class="stack">
+        <div class="item">stash@{2}　chore: 调整样式</div>
+        <div class="item">stash@{1}　feat: 用户模块草稿</div>
+        <div class="item">stash@{0}　fix: 首页 bug 未完成</div>
+        <div class="base">工作区（干净状态）</div>
+      </div>
+      <p class="caption">Stash 是一个后进先出的栈，最新存入的在最上面（stash@{0}）</p>
+
+      <h3>核心命令</h3>
+      <pre><code><span class="cm"># 存入抽屉（把当前所有未提交改动藏起来）</span>
+<span class="cy">git</span> stash
+<span class="cy">git</span> stash push <span class="co">-m</span> <span class="cs">"首页样式改到一半"</span>   <span class="cm"># 带说明，推荐</span>
+
+<span class="cm"># 包含未跟踪的新文件（默认不含）</span>
+<span class="cy">git</span> stash <span class="co">-u</span>
+
+<span class="cm"># 查看抽屉里都有什么</span>
+<span class="cy">git</span> stash list
+
+<span class="cm"># 取出来并删除这条记录（最常用）</span>
+<span class="cy">git</span> stash pop
+
+<span class="cm"># 取出来但保留记录（想取多次时用）</span>
+<span class="cy">git</span> stash apply
+<span class="cy">git</span> stash apply stash@{1}   <span class="cm"># 取指定的某一条</span>
+
+<span class="cm"># 查看某条 stash 具体改了什么</span>
+<span class="cy">git</span> stash show <span class="co">-p</span> stash@{0}
+
+<span class="cm"># 删掉某条 / 清空全部</span>
+<span class="cy">git</span> stash drop stash@{0}
+<span class="cy">git</span> stash clear</code><button type="button" class="copy-btn">复制</button></pre>
+
+      <table>
+        <thead><tr><th>命令</th><th>取回改动</th><th>保留 stash 记录</th></tr></thead>
+        <tbody>
+          <tr><td><code>git stash pop</code></td><td>✅</td><td>❌ 自动删除</td></tr>
+          <tr><td><code>git stash apply</code></td><td>✅</td><td>✅ 保留</td></tr>
+        </tbody>
+      </table>
+
+      <div class="box warn">
+        <b>容易踩的坑</b>
+        <p>
+        ① <code>git stash</code> <strong>默认不包含未被 Git 跟踪的新文件</strong>，新建的文件会被留在工作区。要用 <code>-u</code>；<br>
+        ② <code>pop</code> 时如果当前分支和存 stash 时的代码差异太大，可能产生冲突，需要手动解决；<br>
+        ③ Stash 是<strong>本地的</strong>，不会同步到远程，也不会备份。重要的东西还是老实提交到分支比较安全。
+        </p>
+      </div>
+
+      <div class="box tip">
+        <b>Stash vs Worktree 怎么选</b>
+        <p><strong>Stash</strong>：临时离开几分钟，改动还不完整，只想快速切走再回来。<br>
+        <strong>Worktree</strong>：需要长时间并行在另一个分支工作，两个分支都要能随时编译运行。</p>
+      </div>
+    </section>
+
+    <!-- ========== 15 Rebase ========== -->
+    <section class="ch visible" id="ch15">
+      <div class="ch-head">
+        <div class="ch-no">15</div>
+        <h2>Rebase 变基</h2>
+      </div>
+      <p class="lead">把「分叉的历史」重新捋成一条直线。</p>
+
+      <h3>Rebase 做了什么</h3>
+      <p>Merge 是「把两条线连起来」，会产生一个分叉的 merge commit。
+      Rebase 则是「把你的提交一个一个拔起来，重新插到目标分支的最新提交后面」，历史变成一条干净的直线。</p>
+
+      <svg class="diagram" viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg">
+        <text x="30" y="26" font-size="12.5" fill="#5a6474" font-weight="700" font-family="-apple-system, sans-serif">① Rebase 之前（历史分叉）</text>
+
+        <line x1="60" y1="70" x2="400" y2="70" stroke="#cbd5e1" stroke-width="3"></line>
+        <path d="M200,70 C240,70 240,130 340,130" fill="none" stroke="#cbd5e1" stroke-width="3"></path>
+        <line x1="340" y1="130" x2="480" y2="130" stroke="#cbd5e1" stroke-width="3"></line>
+
+        <g font-family="ui-monospace, monospace" font-size="11" text-anchor="middle">
+          <circle cx="80" cy="70" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="80" y="75" fill="#f05133">C1</text>
+          <circle cx="200" cy="70" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="200" y="75" fill="#f05133">C2</text>
+          <circle cx="330" cy="70" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="330" y="75" fill="#f05133">C3</text>
+
+          <circle cx="340" cy="130" r="15" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="340" y="135" fill="#2563eb">C4</text>
+          <circle cx="460" cy="130" r="15" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="460" y="135" fill="#2563eb">C5</text>
+        </g>
+        <text x="290" y="52" font-size="10.5" fill="#8b95a5" font-family="ui-monospace, monospace">main</text>
+        <text x="510" y="134" font-size="10.5" fill="#2563eb" font-family="ui-monospace, monospace">feature</text>
+
+        <text x="30" y="205" font-size="12.5" fill="#5a6474" font-weight="700" font-family="-apple-system, sans-serif">② Rebase 之后（一条直线）</text>
+
+        <line x1="60" y1="255" x2="620" y2="255" stroke="#cbd5e1" stroke-width="3"></line>
+
+        <g font-family="ui-monospace, monospace" font-size="11" text-anchor="middle">
+          <circle cx="80" cy="255" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="80" y="260" fill="#f05133">C1</text>
+          <circle cx="200" cy="255" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="200" y="260" fill="#f05133">C2</text>
+          <circle cx="320" cy="255" r="15" fill="#fff" stroke="#f05133" stroke-width="2.5"></circle>
+          <text x="320" y="260" fill="#f05133">C3</text>
+          <circle cx="440" cy="255" r="15" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="440" y="260" fill="#2563eb">C4'</text>
+          <circle cx="560" cy="255" r="15" fill="#fff" stroke="#2563eb" stroke-width="2.5"></circle>
+          <text x="560" y="260" fill="#2563eb">C5'</text>
+        </g>
+        <text x="350" y="295" text-anchor="middle" font-size="11" fill="#8b95a5" font-family="-apple-system, sans-serif">
+          C4、C5 被「重新播放」到 C3 之后，hash 变了（带撇号），历史变成一条干净的直线
+        </text>
+      </svg>
+
+      <h3>常用命令</h3>
+      <pre><code><span class="cm"># 把自己分支上的提交，重新接到 main 的最新提交之后</span>
+<span class="cy">git</span> switch feature
+<span class="cy">git</span> rebase main
+
+<span class="cm"># 交互式 rebase：整理最近 3 次提交（合并、改信息、删除、排序）</span>
+<span class="cy">git</span> rebase <span class="co">-i</span> HEAD~3
+
+<span class="cm"># pull 时用 rebase 模式，避免产生多余的 merge commit</span>
+<span class="cy">git</span> pull <span class="co">--rebase</span>
+
+<span class="cm"># 出问题了，中止 rebase，回到操作前</span>
+<span class="cy">git</span> rebase <span class="co">--abort</span>
+
+<span class="cm"># 冲突解决完，继续 rebase</span>
+<span class="cy">git</span> add &lt;文件&gt;
+<span class="cy">git</span> rebase <span class="co">--continue</span></code><button type="button" class="copy-btn">复制</button></pre>
+
+      <h3>交互式 Rebase：整理提交历史的利器</h3>
+      <p>执行 <code>git rebase -i HEAD~3</code> 后，编辑器会打开一个列表，每行前面有一个动作关键字：</p>
+      <table>
+        <thead><tr><th>关键字</th><th>含义</th></tr></thead>
+        <tbody>
+          <tr><td><code>pick</code></td><td>保留这个提交（默认）</td></tr>
+          <tr><td><code>reword</code></td><td>保留提交但修改说明文字</td></tr>
+          <tr><td><code>squash</code></td><td>把这个提交合并进上一个提交</td></tr>
+          <tr><td><code>fixup</code></td><td>同 squash，但丢弃本条提交的说明</td></tr>
+          <tr><td><code>drop</code></td><td>删除这个提交</td></tr>
+          <tr><td><code>edit</code></td><td>暂停下来修改这个提交</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Merge vs Rebase 对比</h3>
+      <table>
+        <thead><tr><th></th><th>Merge</th><th>Rebase</th></tr></thead>
+        <tbody>
+          <tr><td>历史形态</td><td>保留分叉，有 merge commit</td><td>一条直线，无分叉</td></tr>
+          <tr><td>提交 hash</td><td>不变</td><td><strong>会改变</strong>（生成新提交）</td></tr>
+          <tr><td>真实性</td><td>真实还原开发过程</td><td>历史被「美化」</td></tr>
+          <tr><td>适用</td><td>公共分支合并</td><td>整理自己的本地分支</td></tr>
+          <tr><td>风险</td><td>历史较乱</td><td><strong>改写历史，可能影响他人</strong></td></tr>
+        </tbody>
+      </table>
+
+      <div class="box danger">
+        <b>Rebase 的黄金法则</b>
+        <p><strong>永远不要对「已经推送到远程、且有其他人在用」的分支执行 rebase。</strong><br>
+        因为 rebase 会重写提交 hash。你本地变基了，别人本地还是旧历史，一旦同步就会产生大量重复提交和诡异冲突，
+        最后往往只能靠 <code>push -f</code> 强推来收拾，进而把队友的代码冲掉。<br><br>
+        <strong>记住一句话：只在「属于你自己的、还没推送的」提交上做 rebase。</strong></p>
+      </div>
+
+      <div class="box ok">
+        <b>推荐的实践组合</b>
+        <p>
+        本地开发时：<code>git rebase -i</code> 整理提交 → 合并成一条干净的记录；<br>
+        同步远程时：<code>git pull --rebase</code> 避免无意义的 merge commit；<br>
+        合并到 main 时：走 Pull Request + Merge（保留分叉，保证安全可追溯）。
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== 速查表 ========== -->
+    <section class="ch visible" id="cheat">
+      <div class="ch-head">
+        <div class="ch-no">★</div>
+        <h2>命令速查表</h2>
+        <span class="time">全课汇总</span>
+      </div>
+      <p class="lead">把这张表打印出来贴在显示器旁，一周就能形成肌肉记忆。</p>
+
+      <h3>环境与初始化</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git --version</td><td>查看 Git 版本</td></tr>
+          <tr><td>git config --global user.name "名字"</td><td>配置用户名</td></tr>
+          <tr><td>git config --global user.email "邮箱"</td><td>配置邮箱</td></tr>
+          <tr><td>git init</td><td>初始化本地仓库</td></tr>
+          <tr><td>git clone &lt;url&gt;</td><td>克隆远程仓库到本地</td></tr>
+        </tbody>
+      </table>
+
+      <h3>日常提交</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git status</td><td>查看当前状态（最常用）</td></tr>
+          <tr><td>git add &lt;文件&gt; / git add .</td><td>加入暂存区</td></tr>
+          <tr><td>git commit -m "说明"</td><td>提交</td></tr>
+          <tr><td>git commit -am "说明"</td><td>跳过 add 直接提交已跟踪文件</td></tr>
+          <tr><td>git log --oneline --graph</td><td>查看提交历史（带分支图）</td></tr>
+          <tr><td>git diff / git diff --staged</td><td>查看差异</td></tr>
+        </tbody>
+      </table>
+
+      <h3>分支</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git branch</td><td>查看分支</td></tr>
+          <tr><td>git switch -c &lt;名字&gt;</td><td>创建并切换分支</td></tr>
+          <tr><td>git switch &lt;名字&gt;</td><td>切换分支</td></tr>
+          <tr><td>git merge &lt;分支&gt;</td><td>合并分支到当前分支</td></tr>
+          <tr><td>git branch -d &lt;分支&gt;</td><td>删除分支</td></tr>
+          <tr><td>git worktree add ../路径 &lt;分支&gt;</td><td>新建工作树</td></tr>
+        </tbody>
+      </table>
+
+      <h3>远程协作</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git remote add origin &lt;url&gt;</td><td>关联远程仓库</td></tr>
+          <tr><td>git remote -v</td><td>查看远程地址</td></tr>
+          <tr><td>git push -u origin main</td><td>首次推送并绑定分支</td></tr>
+          <tr><td>git push</td><td>推送提交</td></tr>
+          <tr><td>git pull</td><td>拉取并合并（= fetch + merge）</td></tr>
+          <tr><td>git pull --rebase</td><td>拉取并变基（历史更干净）</td></tr>
+          <tr><td>git fetch</td><td>只下载不合并</td></tr>
+        </tbody>
+      </table>
+
+      <h3>撤销与回退</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git restore &lt;文件&gt;</td><td>放弃工作区改动</td></tr>
+          <tr><td>git restore --staged &lt;文件&gt;</td><td>把文件移出暂存区</td></tr>
+          <tr><td>git reset --soft HEAD~1</td><td>撤销提交，改动回到暂存区</td></tr>
+          <tr><td>git reset --mixed HEAD~1</td><td>撤销提交和 add，改动回到工作区</td></tr>
+          <tr><td>git reset --hard HEAD~1</td><td>彻底回退（危险，公共分支禁用）</td></tr>
+          <tr><td>git revert &lt;commit-id&gt;</td><td>生成反向提交撤销某次改动（安全）</td></tr>
+        </tbody>
+      </table>
+
+      <h3>进阶</h3>
+      <table class="cheat">
+        <tbody>
+          <tr><td>git cherry-pick &lt;commit-id&gt;</td><td>摘取单个提交到当前分支</td></tr>
+          <tr><td>git stash / git stash pop</td><td>临时存档 / 取出存档</td></tr>
+          <tr><td>git stash list</td><td>查看所有存档</td></tr>
+          <tr><td>git rebase main</td><td>把当前分支变基到 main</td></tr>
+          <tr><td>git rebase -i HEAD~3</td><td>交互式整理最近 3 次提交</td></tr>
+          <tr><td>git rebase --abort</td><td>中止变基</td></tr>
+          <tr><td>git merge --abort</td><td>中止合并</td></tr>
+        </tbody>
+      </table>
+
+      <div class="box ok">
+        <b>三句话总结整门课</b>
+        <p>
+        <strong>1.</strong> Git 用 <strong>Commit</strong> 记录快照，用<strong>四区模型</strong>（工作区 → 暂存区 → 本地仓库 → 远程仓库）管理流动。<br>
+        <strong>2.</strong> <strong>Branch</strong> 让你并行开发，<strong>Merge</strong> 让成果汇合，<strong>Conflict</strong> 是人为裁决点。<br>
+        <strong>3.</strong> 公共分支<strong>永远不用 reset / rebase</strong>，要撤销就用 <strong>revert</strong>——这条守住了，就基本不会出大事。
+        </p>
+      </div>
+    </section>
+
+
+  </div>
+</main>
+
+<!-- 回到顶部按钮 -->
+<button id="backTop" aria-label="回到顶部" title="回到顶部" class="show">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 19V5M5 12l7-7 7 7"></path>
+  </svg>
+</button>
+
+<script>
+  /* ============ 0. 启用 JS 特效标记（用于章节淡入降级） ============ */
+  document.body.classList.add('js-ready');
+
+  /* ============ 1. 顶部进度条 ============ */
+  const bar = document.getElementById('progress');
+  const backTop = document.getElementById('backTop');
+
+  function onScroll() {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+    bar.style.width = pct + '%';
+
+    if (h.scrollTop > 400) backTop.classList.add('show');
+    else backTop.classList.remove('show');
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  backTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  /* ============ 2. 侧边栏高亮 ============ */
+  const links = Array.from(document.querySelectorAll('#nav a'));
+  const map = new Map();
+  links.forEach(a => {
+    const id = a.getAttribute('href').slice(1);
+    const sec = document.getElementById(id);
+    if (sec) map.set(sec, a);
+  });
+
+  const navIo = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const link = map.get(e.target);
+        if (link) {
+          link.classList.add('active');
+          const nav = document.getElementById('nav');
+          const top = link.offsetTop - nav.offsetTop;
+          if (top < nav.scrollTop || top > nav.scrollTop + nav.clientHeight - 60) {
+            link.scrollIntoView({ block: 'nearest' });
+          }
+        }
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+
+  map.forEach((_, sec) => navIo.observe(sec));
+
+  /* ============ 3. 章节淡入 ============ */
+  const sections = document.querySelectorAll('section.ch');
+  if ('IntersectionObserver' in window) {
+    const fadeIo = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          fadeIo.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.05 });
+    sections.forEach(s => fadeIo.observe(s));
+  } else {
+    sections.forEach(s => s.classList.add('visible'));
+  }
+
+  /* ============ 4. 代码块一键复制 ============ */
+  document.querySelectorAll('pre').forEach(pre => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = '复制';
+    pre.appendChild(btn);
+
+    btn.addEventListener('click', async () => {
+      const codeEl = pre.querySelector('code');
+      const text = (codeEl ? codeEl.innerText : pre.innerText).replace(/\s+$/, '');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        }
+        btn.textContent = '已复制 ✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = '复制';
+          btn.classList.remove('copied');
+        }, 1500);
+      } catch (err) {
+        btn.textContent = '复制失败';
+        setTimeout(() => btn.textContent = '复制', 1500);
+      }
+    });
+  });
+
+  /* ============ 5. 平滑跳转（侧边栏点击时避免顶栏遮挡） ============ */
+  links.forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      const y = target.getBoundingClientRect().top + window.scrollY - 16;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+</script>
+
+
+</body></html>
