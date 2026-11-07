@@ -6,6 +6,7 @@ desktop.ini
 .idea/
 *.swp
 *~
+.env
 
 # ---- 临时文件 ----
 ~$*
